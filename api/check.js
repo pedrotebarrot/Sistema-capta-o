@@ -10,7 +10,7 @@ export default async function handler(req, res) {
   try {
     for (const op of ops) {
       if (!op?.id || !op?.item) continue;
-      const { error } = await sb.rpc("set_check", { p_id: op.id, p_item: String(op.item), p_val: op.val ?? { v: false } });
+      const { error } = await sb.rpc("captacao_set_check", { p_id: op.id, p_item: String(op.item), p_val: op.val ?? { v: false } });
       if (error) throw error;
     }
     res.status(200).json({ ok: true, saved: ops.length });

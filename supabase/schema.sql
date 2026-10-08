@@ -1,6 +1,6 @@
 -- Rode uma vez no Supabase: SQL Editor > New query > colar > Run.
 
-create table if not exists public.events (
+create table if not exists public.captacao_events (
   id          uuid primary key default gen_random_uuid(),
   title       text not null,
   client      text not null,
@@ -20,20 +20,20 @@ create table if not exists public.events (
 
 -- RLS ligado e sem policies: ninguém acessa pela chave pública.
 -- Só as funções da Vercel (com a service role key) leem e gravam.
-alter table public.events enable row level security;
+alter table public.captacao_events enable row level security;
 
 -- Marca um item sem sobrescrever o que outra pessoa marcou ao mesmo tempo.
-create or replace function public.set_check(p_id uuid, p_item text, p_val jsonb)
+create or replace function public.captacao_set_check(p_id uuid, p_item text, p_val jsonb)
 returns void
 language sql
 security definer
 set search_path = public
 as $$
-  update public.events
+  update public.captacao_events
      set checks = checks || jsonb_build_object(p_item, p_val),
          updated_at = now()
    where id = p_id;
 $$;
 
-revoke execute on function public.set_check(uuid, text, jsonb) from public, anon, authenticated;
-grant execute on function public.set_check(uuid, text, jsonb) to service_role;
+revoke execute on function public.captacao_set_check(uuid, text, jsonb) from public, anon, authenticated;
+grant execute on function public.captacao_set_check(uuid, text, jsonb) to service_role;
