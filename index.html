@@ -1,0 +1,782 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#14181D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Captação Dennova</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: app de campo, mobile-first. Barra de modo PRÉ · DURANTE · PÓS no estilo seletor de câmera; listas densas e tocáveis. */
+:root{
+  --bg:#ECEFF2; --surface:#FFFFFF; --sunken:#F5F7F9; --ink:#14181D; --muted:#5A6370; --line:#D3D9E0;
+  --rec:#D3232C; --rec-soft:#FBE7E8; --ok:#1C8752; --ok-soft:#E3F3EA; --warn:#B86E00; --warn-soft:#FBF0DC;
+  --display:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --body:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0F1215; --surface:#181C21; --sunken:#13171B; --ink:#E7EAEE; --muted:#97A1AD; --line:#2A3139;
+  --rec:#FF4B54; --rec-soft:#3A1719; --ok:#4CC286; --ok-soft:#14301F; --warn:#F0A63A; --warn-soft:#352613; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1215; --surface:#181C21; --sunken:#13171B; --ink:#E7EAEE; --muted:#97A1AD; --line:#2A3139;
+  --rec:#FF4B54; --rec-soft:#3A1719; --ok:#4CC286; --ok-soft:#14301F; --warn:#F0A63A; --warn-soft:#352613; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:860px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(26px,5vw,36px);font-weight:800;font-stretch:78%;letter-spacing:-.01em}
+h2{font-size:22px;font-weight:750;font-stretch:82%}
+h3{font-size:16px;font-weight:700}
+p{margin:0}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.label{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.muted{color:var(--muted)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--rec);outline-offset:2px}
+a{color:inherit}
+
+/* Topo */
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:14px 10px;border-bottom:1px solid var(--line);margin-inline:-16px;padding-inline:16px}
+.top .wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;margin-right:auto}
+.rec{width:10px;height:10px;border-radius:50%;background:var(--rec);box-shadow:0 0 0 3px var(--rec-soft)}
+.brand b{font-family:var(--display);font-weight:800;font-stretch:72%;font-size:20px;letter-spacing:.01em;text-transform:uppercase}
+nav.tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px}
+nav.tabs button{border:0;background:none;padding:6px 14px;border-radius:999px;font-weight:600;font-size:14px;color:var(--muted)}
+nav.tabs button[aria-current="page"]{background:var(--ink);color:var(--bg)}
+
+main{padding-top:22px;display:grid;gap:22px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.stack{display:grid;gap:12px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:1px solid var(--line);background:var(--surface);padding:9px 14px;border-radius:8px;font-weight:600;font-size:14px}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn.rec{background:var(--rec);color:#fff;border-color:var(--rec)}
+.btn.ghost{background:none;border-color:transparent;color:var(--muted)}
+.btn:disabled{opacity:.5;cursor:default}
+.chip{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.chip.must{border-color:var(--rec);color:var(--rec);background:var(--rec-soft)}
+.chip.ok{border-color:var(--ok);color:var(--ok);background:var(--ok-soft)}
+.chip.warn{border-color:var(--warn);color:var(--warn);background:var(--warn-soft)}
+input[type=text],input[type=date],input[type=url],select,textarea{width:100%;background:var(--sunken);border:1px solid var(--line);border-radius:8px;padding:9px 11px}
+textarea{min-height:120px;resize:vertical;font-size:14px}
+.field{display:grid;gap:5px;min-width:0}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.note{font-size:13px;color:var(--muted)}
+.alert{border:1px solid var(--warn);background:var(--warn-soft);color:var(--ink);border-radius:8px;padding:10px 12px;font-size:14px}
+.alert.err{border-color:var(--rec);background:var(--rec-soft)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:999px;font-size:14px;z-index:20}
+
+/* Lista de eventos */
+.events{display:grid;gap:10px}
+.ev{display:grid;grid-template-columns:64px 1fr auto;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;text-align:left;width:100%}
+.ev:hover{border-color:var(--muted)}
+.ev .date{display:grid;justify-items:center;border-right:1px solid var(--line);padding-right:12px}
+.ev .date b{font-family:var(--display);font-size:26px;font-stretch:75%;line-height:1}
+.ev .meta{min-width:0}
+.ev .meta h3{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bars{display:grid;gap:3px;width:84px}
+.bar{height:4px;border-radius:2px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--ok)}
+.empty{border:1px dashed var(--line);border-radius:var(--r);padding:28px;text-align:center;color:var(--muted)}
+
+/* Evento */
+.evhead{display:grid;gap:8px}
+.back{justify-self:start}
+.mode{display:flex;justify-content:center;gap:4px;background:var(--ink);border-radius:999px;padding:4px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 64px);z-index:4}
+.mode button{flex:1;border:0;background:none;color:var(--bg);opacity:.6;font-family:var(--mono);font-weight:700;font-size:13px;letter-spacing:.12em;padding:9px 6px;border-radius:999px;display:flex;justify-content:center;gap:8px;align-items:center}
+.mode button[aria-pressed="true"]{opacity:1;background:var(--rec);color:#fff}
+.mode small{font-weight:500;letter-spacing:0;opacity:.85}
+.group{display:grid;gap:2px}
+.group>h3{display:flex;align-items:baseline;gap:10px;padding:14px 0 6px;border-bottom:1px solid var(--line);margin-bottom:4px}
+.group>h3 .count{margin-left:auto}
+.item{display:grid;grid-template-columns:26px 1fr;gap:10px;padding:9px 4px;border-radius:8px;align-items:start}
+.item:hover{background:var(--sunken)}
+.item input{appearance:none;width:22px;height:22px;border:2px solid var(--muted);border-radius:6px;margin:1px 0 0;display:grid;place-content:center;cursor:pointer;background:var(--surface)}
+.item input:checked{background:var(--ok);border-color:var(--ok)}
+.item input:checked::after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.item label{cursor:pointer;min-width:0}
+.item .t{display:block}
+.item.done .t{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--line)}
+.item .sub{display:block;font-size:13px;color:var(--muted);margin-top:2px}
+.item .who{display:block;font-family:var(--mono);font-size:11px;color:var(--ok);margin-top:2px}
+.item .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px}
+.item ul{margin:6px 0 0;padding-left:18px;font-size:14px;color:var(--muted)}
+.src{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:1px 6px;border-radius:4px;background:var(--rec-soft);color:var(--rec);vertical-align:2px;margin-left:6px}
+.addline{display:flex;gap:8px;margin-top:6px}
+.addline input{flex:1}
+.path{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap}
+.path code{flex:1;min-width:0;overflow-wrap:anywhere;background:var(--sunken);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-family:var(--mono);font-size:13px}
+.ring{display:flex;gap:16px;flex-wrap:wrap}
+.ring div{display:grid;gap:4px;min-width:90px;flex:1}
+
+/* Manual */
+.manual{display:grid;gap:14px}
+.rule{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;padding:10px 0;border-top:1px solid var(--line)}
+.rule:first-of-type{border-top:0}
+.rule .n{font-family:var(--mono);font-size:12px;color:var(--rec);padding-top:2px}
+.rule .m{grid-column:2;font-size:13px;color:var(--muted)}
+.rule .m b{color:var(--ink);font-weight:600}
+.toc{display:flex;gap:6px;flex-wrap:wrap}
+
+/* Roteiro */
+.tpl h3{margin-top:16px}
+.tpl ol{margin:6px 0 0;padding-left:20px;color:var(--muted);font-size:14px}
+.drop{border:2px dashed var(--line);border-radius:var(--r);padding:18px;text-align:center;color:var(--muted)}
+.drop.over{border-color:var(--rec);color:var(--ink)}
+.spinner{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--rec);animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.spinner{animation:none}}
+@media (max-width:520px){
+  .ev{grid-template-columns:52px 1fr}
+  .ev .bars{grid-column:1/-1;width:100%;grid-template-columns:repeat(3,1fr)}
+  nav.tabs button{padding:6px 10px}
+}
+[hidden]{display:none!important}
+.sync{font-family:var(--mono);font-size:11px;padding:3px 9px;border-radius:999px;border:1px solid var(--warn);color:var(--warn);background:var(--warn-soft)}
+.sync.ok{border-color:var(--line);color:var(--muted);background:none}
+.login{max-width:380px;margin:12vh auto 0}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <div class="brand"><span class="rec" aria-hidden="true"></span><b>Captação Dennova</b></div>
+  <span id="sync" class="sync ok" hidden></span>
+  <nav class="tabs" aria-label="Seções">
+    <button id="tab-eventos" data-tab="eventos">Eventos</button>
+    <button id="tab-manual" data-tab="manual">Manual</button>
+    <button id="tab-roteiro" data-tab="roteiro">Roteiro modelo</button>
+  </nav>
+</div></header>
+<div class="wrap"><main id="app"></main></div>
+<script>
+/* ============================== CONTEÚDO ============================== */
+/* nível: "o" = obrigatório, "b" = boa prática (quando der) */
+const MANUAL = [
+ {id:"audio",lv:"o",name:"Áudio",lead:"Vídeo com imagem ruim ainda se salva. Áudio ruim não tem edição que conserte.",rules:[
+  ["Lapela a um palmo abaixo do queixo","15 a 20 cm, centralizada no peito, longe de colar, crachá, cabelo e gola que raspe."],
+  ["Uma pessoa falando, um transmissor ligado","O segundo transmissor fica <b>desligado e dentro do case fechado</b>. Dois mics abertos numa mesma voz geram eco e interferência."],
+  ["Confirme que o som vem da lapela","Bata de leve no microfone da lapela: o medidor do app tem que reagir. Se reagir quando você bate no celular, está gravando pelo mic do iPhone."],
+  ["Monitore com fone o tempo todo","Pode ser com fio ou Bluetooth. No Bluetooth, ligue o <b>modo baixa latência / modo gamer</b> e confira que o fone <b>não virou o microfone</b>: o app tem que continuar usando o receptor da lapela como entrada. Refaça o teste do toque depois de conectar o fone."],
+  ["Nível entre −12 e −6 dB","Picos da fala nessa faixa. Nunca no vermelho. Teste com a pessoa falando nome, cargo e uma frase no tom normal."],
+  ["Silêncio no ambiente","Desligue ar-condicionado e ventilador durante depoimentos, peça para baixar a música, feche portas. Em área externa, use a espuma ou pelúcia."]
+ ]},
+ {id:"luz",lv:"o",name:"Iluminação",lead:"Regra de ouro: o rosto é a coisa mais clara do quadro.",rules:[
+  ["Fundo um pouco mais escuro que o rosto","Se o fundo estiver mais claro, a pessoa vira silhueta. O rosto tem que ser o ponto mais iluminado."],
+  ["Sem contraluz","Janela ou luz forte nunca atrás da pessoa. Se não der para mudar, vire a pessoa e a câmera."],
+  ["Olhos visíveis","Os olhos precisam aparecer, com brilho. Sombra escura embaixo dos olhos ou do nariz = luz só de cima; mude a posição ou adicione luz na frente."],
+  ["Não misture cores de luz","Toda luz do rosto na mesma cor: luz do dia ≈ 5600 K, lâmpada amarela ≈ 3200 K. LED ajustada para a cor do ambiente."]
+ ]},
+ {id:"camera",lv:"o",name:"Câmera",lead:"Configuração igual do começo ao fim do evento.",rules:[
+  ["4K 30 fps ou 1080p 30 fps","Escolha um e use no evento inteiro. Não misture."],
+  ["60 fps só para b-roll em câmera lenta","Falas e depoimentos sempre em 30 fps."],
+  ["HDR de vídeo desligado","iPhone: Ajustes › Câmera › Gravar Vídeo › HDR. HDR deixa a cor lavada em vários editores."],
+  ["Bateria ≥ 80% e ≥ 20 GB livres","Antes de sair. Modo avião e Não Perturbe ligados para nenhuma ligação cortar a gravação."],
+  ["2 s antes e 2 s depois","Comece a gravar 2 s antes da fala e pare só 2 s depois que ela terminar. O editor precisa dessa sobra."]
+ ]},
+ {id:"arquivos",lv:"o",name:"Arquivos",lead:"Quem edita pode não ser quem gravou. O material precisa chegar original, completo e no lugar certo.",rules:[
+  ["Sempre o arquivo original","Nunca por WhatsApp: ele comprime e destrói o arquivo."],
+  ["Dois caminhos para o Drive","<b>Subir direto do celular</b> pelo app do Drive, ou <b>passar por cabo / AirDrop</b> (“Todos os dados de fotos”) para o computador e subir de lá."],
+  ["Pasta certa","<b>Cliente › Vídeos › mês da captação › Material bruto – nome do evento</b>. O caminho exato aparece no PÓS de cada evento, com botão de copiar."],
+  ["Só apague depois de conferir","Abra a pasta no Drive e confira que todos os arquivos estão lá (mesma quantidade do celular). Só então apague."]
+ ]},
+ {id:"luz-b",lv:"b",name:"Iluminação",lead:"Quando der tempo e estrutura, melhora muito o resultado.",rules:[
+  ["Luz principal a 45°","Ao lado da câmera, apontada para o rosto, um pouco acima da linha dos olhos."],
+  ["Trave exposição e foco no rosto","Toque e segure no rosto (AE/AF travado) e baixe a exposição até a pele não estourar."]
+ ]},
+ {id:"quadro",lv:"b",name:"Enquadramento",lead:"Padrão da agência: vertical 9:16, a menos que o roteiro peça outra coisa.",rules:[
+  ["Câmera na altura dos olhos","Nem de baixo pra cima, nem de cima pra baixo. Horizonte reto, grade ligada."],
+  ["Depoimento em plano médio","Do meio do peito para cima. Olhos na linha do terço superior, um dedo de espaço acima da cabeça."],
+  ["Área segura do vertical","Nada importante nos 15% de cima e de baixo da tela: é onde ficam legenda e botões do Instagram."],
+  ["Lente 1x para rostos","Evite 0,5x em pessoas: distorce o rosto. 0,5x só para ambiente."],
+  ["Olhar definido antes de gravar","Depoimento: olhar para quem pergunta, ao lado da câmera. Fala para o público: direto na lente. O roteiro diz qual."],
+  ["Três planos por momento","Aberto (contexto), médio (ação) e detalhe (mãos, produto, logo). Dá opção de corte para o editor."]
+ ]},
+ {id:"estab",lv:"b",name:"Estabilização",lead:"Imagem tremida é a primeira coisa que o público percebe.",rules:[
+  ["Depoimento no tripé","Sempre que tiver tripé no kit."],
+  ["Movimento lento e longo","Cada plano de b-roll com uns 8 s. Movimentos devagar, começando e terminando parado."],
+  ["Sem zoom durante o take","Aproxime andando. Zoom digital perde qualidade e treme."],
+  ["Na mão: cotovelos colados","Sem gimbal, cotovelos junto ao corpo, passos curtos com joelho levemente dobrado."]
+ ]},
+ {id:"fundo",lv:"b",name:"Fundo e cenário",lead:"Antes de gravar, olhe só o fundo da tela por 5 segundos.",rules:[
+  ["Pessoa a 1 m da parede","Ideal 2 m. Dá profundidade e evita sombra na parede."],
+  ["Fundo limpo","Sem lixeira, fio, copo, papel, gente passando, janela estourada ou marca concorrente."],
+  ["Nada saindo da cabeça","Planta, quina de parede, poste ou quadro alinhado com a cabeça: mude o ângulo."],
+  ["Um elemento da marca do cliente","Logo, produto, fachada ou cor da marca no quadro, sem tampar a pessoa."]
+ ]}
+];
+
+/* opt:true = boa prática (não conta no progresso) */
+const GENERIC = [
+ // PRÉ
+ {id:"g-k1",ph:"pre",g:"Kit",t:"Celular com bateria ≥ 80% e ≥ 20 GB livres"},
+ {id:"g-k2",ph:"pre",g:"Kit",t:"Kit lapela carregado (2 transmissores + receptor)"},
+ {id:"g-k3",ph:"pre",g:"Kit",t:"Fone de ouvido carregado (com fio ou Bluetooth)"},
+ {id:"g-k4",ph:"pre",g:"Kit",t:"Tripé com suporte de celular"},
+ {id:"g-k5",ph:"pre",g:"Kit",t:"Luz LED carregada"},
+ {id:"g-k6",ph:"pre",g:"Kit",t:"Powerbank carregado + cabo"},
+ {id:"g-k7",ph:"pre",g:"Kit",t:"Pano de microfibra para a lente"},
+ {id:"g-k8",ph:"pre",g:"Kit",t:"Roteiro lido e cenas obrigatórias conhecidas"},
+ {id:"g-c1",ph:"pre",g:"Câmera",t:"4K 30 fps ou 1080p 30 fps, igual no evento inteiro",s:"60 fps só para b-roll em câmera lenta"},
+ {id:"g-c2",ph:"pre",g:"Câmera",t:"HDR de vídeo desligado",s:"iPhone: Ajustes › Câmera › Gravar Vídeo"},
+ {id:"g-c3",ph:"pre",g:"Câmera",t:"Modo avião + Não Perturbe ligados"},
+ {id:"g-c4",ph:"pre",g:"Câmera",t:"Lente limpa"},
+ {id:"g-a1",ph:"pre",g:"Áudio",t:"Receptor conectado e app reconhecendo a entrada externa"},
+ {id:"g-a2",ph:"pre",g:"Áudio",t:"Lapela a um palmo do queixo, centralizada, sem raspar em nada"},
+ {id:"g-a3",ph:"pre",g:"Áudio",t:"Um transmissor por pessoa falando; o outro desligado e no case fechado"},
+ {id:"g-a7",ph:"pre",g:"Áudio",t:"Fone Bluetooth: modo baixa latência/gamer ligado e o fone não virou o microfone",s:"Conecte o fone primeiro, depois faça o teste do toque abaixo"},
+ {id:"g-a4",ph:"pre",g:"Áudio",t:"Teste do toque: bati na lapela e o medidor reagiu",s:"Se só reage ao tocar no celular ou no fone, a entrada está errada"},
+ {id:"g-a5",ph:"pre",g:"Áudio",t:"Fone no ouvido, picos entre −12 e −6 dB"},
+ {id:"g-a6",ph:"pre",g:"Áudio",t:"Ar-condicionado, ventilador e música desligados ou longe"},
+ {id:"g-l5",ph:"pre",g:"Luz",t:"Fundo um pouco mais escuro que o rosto"},
+ {id:"g-l2",ph:"pre",g:"Luz",t:"Sem contraluz: janela ou luz forte nunca atrás da pessoa"},
+ {id:"g-l3",ph:"pre",g:"Luz",t:"Olhos visíveis, sem sombra forte embaixo dos olhos e do nariz"},
+ {id:"g-l6",ph:"pre",g:"Luz",t:"Sem misturar cores de luz no rosto"},
+ {id:"g-l1",ph:"pre",g:"Luz",t:"Luz principal a 45° do rosto, um pouco acima dos olhos",opt:true},
+ {id:"g-l4",ph:"pre",g:"Luz",t:"Exposição e foco travados no rosto",opt:true},
+ {id:"g-p1",ph:"pre",g:"Pessoas",t:"Termo de uso de imagem assinado por quem vai falar"},
+ {id:"g-p2",ph:"pre",g:"Pessoas",t:"Celular do entrevistado no silencioso; reflexo de óculos checado"},
+ {id:"g-f4",ph:"pre",g:"Quadro e fundo",t:"Câmera na altura dos olhos, horizonte reto, grade ligada",opt:true},
+ {id:"g-f1",ph:"pre",g:"Quadro e fundo",t:"Pessoa a pelo menos 1 m da parede",opt:true},
+ {id:"g-f2",ph:"pre",g:"Quadro e fundo",t:"Fundo limpo: sem lixo, fios, copos, gente passando",opt:true},
+ {id:"g-f3",ph:"pre",g:"Quadro e fundo",t:"Nada saindo da cabeça da pessoa",opt:true},
+ // DURANTE
+ {id:"g-d1",ph:"durante",g:"Gravação",t:"Gravar 2 s antes da fala e parar 2 s depois"},
+ {id:"g-d2",ph:"durante",g:"Gravação",t:"Fone no ouvido durante todas as falas"},
+ {id:"g-d4",ph:"durante",g:"Gravação",t:"Pedir para a pessoa repetir a pergunta na resposta",s:"“A experiência de hoje foi…”: a voz de quem pergunta sai na edição"},
+ {id:"g-d9",ph:"durante",g:"Gravação",t:"Ouvir o 1º take de cada depoimento antes de seguir (áudio e foco)"},
+ {id:"g-d10",ph:"durante",g:"Gravação",t:"Bateria e espaço checados a cada intervalo"},
+ {id:"g-d3",ph:"durante",g:"Imagem",t:"Depoimentos no tripé",opt:true},
+ {id:"g-d5",ph:"durante",g:"Imagem",t:"Planos de b-roll com uns 8 s",opt:true},
+ {id:"g-d6",ph:"durante",g:"Imagem",t:"Para cada momento: plano aberto, médio e detalhe",opt:true},
+ {id:"g-d7",ph:"durante",g:"Imagem",t:"Sem zoom durante o take; aproximar andando",opt:true},
+ // PÓS
+ {id:"g-o1",ph:"pos",g:"Arquivos",t:"Usar sempre o arquivo original, nunca WhatsApp"},
+ {id:"g-o2",ph:"pos",g:"Arquivos",t:"Subir na pasta do evento (caminho abaixo)",s:"Direto do celular pelo app do Drive, ou por cabo/AirDrop para o computador e de lá para o Drive"},
+ {id:"g-o4",ph:"pos",g:"Arquivos",t:"Conferir no Drive: todos os arquivos estão lá (mesma quantidade do celular)"},
+ {id:"g-o6",ph:"pos",g:"Arquivos",t:"Só então apagar do celular"},
+ {id:"g-o5",ph:"pos",g:"Entrega para edição",t:"Notas para edição preenchidas (abaixo)"},
+ {id:"g-o7",ph:"pos",g:"Entrega para edição",t:"Kit recarregado e guardado no case"}
+];
+
+const TYPES = {
+ cafe:{name:"Café / reunião",cenas:[
+  ["Chegada do anfitrião","Entrada no escritório ou local, recepção","antes","obrigatoria"],
+  ["Convidados conversando antes de começar","Clima, cumprimentos, grupos","antes","obrigatoria"],
+  ["Abertura e fala principal","Plano aberto da sala + médio de quem fala","durante","obrigatoria"],
+  ["Detalhes","Mesa, café, materiais, logo","durante","desejavel"],
+  ["Depoimentos pós-evento","Como foi a experiência",  "depois","obrigatoria",["Como foi a experiência de hoje?","O que você leva daqui?"]]
+ ],equip:[["Tripé",2],["Luz LED",2],["Kit lapela",1],["Powerbank + cabo",1]]},
+ feira:{name:"Feira / evento externo",cenas:[
+  ["Depoimento pré: expectativa","O que o cliente espera do evento","antes","obrigatoria",["O que você espera desse evento?","Por que vocês estão aqui?"]],
+  ["Estande montado","Plano aberto antes do público chegar","antes","obrigatoria"],
+  ["Movimento do público","Fluxo, corredores, entrada","durante","obrigatoria"],
+  ["Interações no estande","Atendimento, conversas, demonstrações","durante","obrigatoria"],
+  ["Detalhes de produto e marca","Logo, produtos, materiais","durante","desejavel"],
+  ["Depoimentos de visitantes ou franqueados","Percepção da marca","durante","obrigatoria",["O que achou do estande?","O que te trouxe até aqui?"]],
+  ["Depoimento pós: balanço","Como foi o evento","depois","desejavel",["Como foi o evento para vocês?"]]
+ ],equip:[["Tripé",1],["Gimbal",1],["Kit lapela",1],["Powerbank + cabo",2],["Espuma/pelúcia para mic",1]]},
+ depoimento:{name:"Depoimento",cenas:[
+  ["Depoimento principal","Plano médio no tripé","durante","obrigatoria",["Quem é você e o que faz?","Qual foi o resultado?"]],
+  ["B-roll da pessoa no dia a dia","Trabalhando, andando, interagindo","durante","obrigatoria"],
+  ["Detalhes do ambiente","Mãos, ferramentas, marca","durante","desejavel"]
+ ],equip:[["Tripé",1],["Luz LED",2],["Kit lapela",1]]},
+ institucional:{name:"Institucional / tour",cenas:[
+  ["Fachada","Plano aberto, de dia","antes","obrigatoria"],
+  ["Equipe trabalhando","Planos médios e detalhes","durante","obrigatoria"],
+  ["Ambientes","Movimento lento por cada área","durante","obrigatoria"],
+  ["Produtos e serviços","Detalhes","durante","desejavel"],
+  ["Fala do gestor","Depoimento no tripé","durante","obrigatoria",["O que é a empresa em uma frase?"]]
+ ],equip:[["Tripé",1],["Gimbal",1],["Luz LED",1],["Kit lapela",1]]},
+ outro:{name:"Outro",cenas:[],equip:[]}
+};
+
+const TEMPLATE = [
+ {h:"1. Identificação",f:["Cliente","Nome do evento","Data","Horário de chegada da equipe","Horário de início e fim do evento","Local (endereço)","Contato no local (nome e telefone)","Responsável pela captação","Quem vai editar"]},
+ {h:"2. Objetivo",f:["O que esse conteúdo precisa mostrar ou comunicar?","Onde vai ser publicado? (Reels, Stories, YouTube, LinkedIn…)","Formato: vertical 9:16 / horizontal 16:9 / ambos","Quantas peças vão ser entregues"]},
+ {h:"3. Programação do evento",tbl:["Horário","Momento","Observação"],rows:6},
+ {h:"4. Cenas obrigatórias",hint:"O que não pode faltar de jeito nenhum.",tbl:["Momento","O que gravar","Quem aparece"],rows:6},
+ {h:"5. Cenas desejáveis",hint:"Se der tempo, é material a mais.",tbl:["Momento","O que gravar","Quem aparece"],rows:4},
+ {h:"6. Depoimentos",tbl:["Quem (nome e cargo)","Quando (antes / depois)","Perguntas"],rows:4},
+ {h:"7. Equipamentos",tbl:["Item","Quantidade"],pre:[["Tripé",""],["Luz LED",""],["Kit lapela (2 transmissores + receptor)",""],["Powerbank + cabo",""],["Gimbal",""],["Celular extra",""]]},
+ {h:"8. Atenções especiais",f:["Pessoas que não podem aparecer","Restrições do local (barulho, luz, horários)","Itens de marca que precisam aparecer","Dress code da equipe"]},
+ {h:"9. Referências",f:["Links de vídeos de referência"]}
+];
+
+const SAMPLE_ROTEIRO = `1. Identificação
+Cliente: SMZTO
+Nome do evento: Café com Franqueados
+Data: 15/10/2026
+Horário de chegada da equipe: 7h30
+Horário de início e fim do evento: 8h30 às 11h
+Local (endereço): Escritório SMZTO
+Responsável pela captação: (preencher)
+
+2. Objetivo
+O que esse conteúdo precisa mostrar ou comunicar? Proximidade entre a SMZTO e os franqueados.
+Onde vai ser publicado? Reels e Stories
+Formato: vertical 9:16
+
+3. Programação do evento
+- 8h00 | Chegada do Semenzato ao escritório
+- 8h30 | Recepção dos franqueados e conversa informal
+- 9h00 | Café e abertura
+- 10h00 | Tour pela SMZTO com os franqueados
+- 10h45 | Depoimentos
+
+4. Cenas obrigatórias
+- Chegada | Semenzato chegando no escritório | Semenzato
+- Antes do início | Franqueados conversando entre si | Franqueados
+- Tour | Franqueados no tour pela SMZTO | Franqueados e equipe
+- Depois | Depoimento dos franqueados sobre a experiência | 3 franqueados
+
+6. Depoimentos
+- 3 franqueados | depois | Como foi a experiência? O que mais marcou? Recomendaria?
+
+7. Equipamentos
+- Tripé | 2
+- Luz LED | 2
+- Powerbank + cabo | 1
+- Kit lapela | 1`;
+
+
+/* ============================== ESTADO ============================== */
+const S = {tab:"eventos", events:[], loaded:false, offline:false, eventId:null, phase:"pre", busy:null, error:null, newOpen:false, draft:null, pdf:{}, mlevel:"o"};
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const MONTHS=["JAN","FEV","MAR","ABR","MAI","JUN","JUL","AGO","SET","OUT","NOV","DEZ"];
+const MESES=["01 Janeiro","02 Fevereiro","03 Março","04 Abril","05 Maio","06 Junho","07 Julho","08 Agosto","09 Setembro","10 Outubro","11 Novembro","12 Dezembro"];
+function toast(msg){const t=document.createElement("div");t.className="toast";t.textContent=msg;document.body.append(t);setTimeout(()=>t.remove(),2400)}
+function lsGet(k){try{return localStorage.getItem(k)}catch{return null}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch{}}
+const lsJSON=(k,d)=>{try{return JSON.parse(lsGet(k))??d}catch{return d}};
+
+/* ============================== API ============================== */
+let KEY=lsGet("team-key")||"", ME=lsGet("my-name")||"";
+async function api(path,opts={}){
+ const r=await fetch(path,{...opts,headers:{"content-type":"application/json","x-team-key":KEY,...(opts.headers||{})},body:opts.body?JSON.stringify(opts.body):undefined});
+ if(r.status===401){KEY="";lsSet("team-key","");render();throw {status:401,error:"Senha inválida."}}
+ const data=r.status===204?{}:await r.json().catch(()=>({}));
+ if(!r.ok) throw {status:r.status,...data};
+ return data;
+}
+
+/* Fila de alterações: cada marcação é salva no aparelho primeiro e enviada ao servidor em seguida.
+   Sem internet, fica na fila e sobe sozinha quando a conexão volta. */
+let OUTBOX=lsJSON("outbox",[]);
+const saveOutbox=()=>lsSet("outbox",JSON.stringify(OUTBOX));
+let flushing=false;
+async function flush(){
+ if(flushing||!OUTBOX.length||!KEY) return syncBadge();
+ flushing=true;
+ try{
+  while(OUTBOX.length){
+   const batch=OUTBOX.slice(0,50);
+   const checks=batch.filter(o=>o.k==="check");
+   if(checks.length) await api("/api/check",{method:"POST",body:{ops:checks}});
+   for(const p of batch.filter(o=>o.k==="patch")) await api("/api/events?id="+encodeURIComponent(p.id),{method:"PATCH",body:p.fields});
+   OUTBOX=OUTBOX.slice(batch.length);saveOutbox();
+  }
+  S.offline=false;
+ }catch(e){if(e?.status!==401)S.offline=true}
+ flushing=false;syncBadge();
+}
+function queue(op){
+ if(op.k==="patch"){const prev=OUTBOX.find(o=>o.k==="patch"&&o.id===op.id);if(prev){Object.assign(prev.fields,op.fields);saveOutbox();flush();return}}
+ OUTBOX.push(op);saveOutbox();flush();
+}
+function overlay(ev){ // aplica por cima o que ainda está na fila
+ for(const o of OUTBOX){if(o.id!==ev.id)continue;
+  if(o.k==="check") ev.checks={...(ev.checks||{}),[o.item]:o.val};
+  if(o.k==="patch") Object.assign(ev,o.fields)}
+ return ev;
+}
+function syncBadge(){
+ const b=$("#sync"); if(!b) return;
+ const n=OUTBOX.length;
+ b.hidden=!KEY;
+ b.className="sync"+(n?"":" ok");
+ b.textContent=n?`${n} ${n===1?"alteração":"alterações"} aguardando internet`:(S.offline?"sem conexão":"tudo salvo");
+ if(!n&&S.offline) b.className="sync";
+}
+
+async function loadEvents(){
+ if(!KEY) return;
+ try{
+  const {events}=await api("/api/events");
+  S.events=events.map(overlay);S.loaded=true;S.offline=false;
+  lsSet("events-cache",JSON.stringify(S.events));
+ }catch(e){
+  if(e?.status===401) return;
+  S.offline=true;
+  if(!S.loaded){S.events=lsJSON("events-cache",[]).map(overlay);S.loaded=true}
+ }
+ const a=document.activeElement;
+ const typing=a&&(a.tagName==="TEXTAREA"||(a.tagName==="INPUT"&&a.type!=="checkbox")||a.closest?.("#new-form"));
+ if(!typing&&!S.busy) render(); else syncBadge();
+}
+
+/* ============================== CHECKLIST ============================== */
+function presetPlan(type){
+ const p=TYPES[type]||TYPES.outro;
+ return {fonte:"modelo",cenas:p.cenas.map(c=>({titulo:c[0],descricao:c[1],momento:c[2],prioridade:c[3],perguntas:c[4]||[]})),
+  equipamentos:p.equip.map(e=>({item:e[0],qtd:e[1]})),pre:[],durante:[],pos:[],alertas:[]};
+}
+function itemsFor(ev, ph){
+ const plan=ev.plan||{}; const out=[];
+ if(ph==="pre"){
+  (plan.equipamentos||[]).forEach((e,i)=>out.push({id:"e-"+i,g:"Equipamentos deste evento",t:(e.qtd?e.qtd+"× ":"")+e.item,src:true}));
+  (plan.pre||[]).forEach((t,i)=>out.push({id:"p-pre-"+i,g:"Específico deste evento",t,src:true}));
+ }
+ if(ph==="durante"){
+  (plan.cenas||[]).forEach((c,i)=>out.push({id:"c-"+i,g:"Cenas do roteiro",cena:c,t:c.titulo,src:true}));
+  (plan.durante||[]).forEach((t,i)=>out.push({id:"p-dur-"+i,g:"Específico deste evento",t,src:true}));
+ }
+ if(ph==="pos") (plan.pos||[]).forEach((t,i)=>out.push({id:"p-pos-"+i,g:"Específico deste evento",t,src:true}));
+ ((ev.custom||{})[ph]||[]).forEach((t,i)=>out.push({id:"u-"+ph+"-"+i,g:"Adicionado pela equipe",t,src:true}));
+ GENERIC.filter(x=>x.ph===ph).forEach(x=>out.push(x));
+ return out;
+}
+function progress(ev,ph){const it=itemsFor(ev,ph).filter(i=>!i.opt);const c=ev.checks||{};const d=it.filter(i=>c[i.id]?.v).length;return {d,n:it.length}}
+function drivePath(ev){
+ const d=ev.date||""; const [y,m,dd]=d.split("-");
+ const mes=m?`${MESES[+m-1]} ${y}`:"Mês da captação";
+ return `${ev.client||"Cliente"} / Vídeos / ${mes} / Material bruto – ${ev.title||"Evento"}${dd?` (${dd}-${m})`:""}`;
+}
+
+/* ============================== RENDER ============================== */
+function render(){
+ document.querySelectorAll("nav.tabs button").forEach(b=>b.setAttribute("aria-current",b.dataset.tab===S.tab?"page":"false"));
+ const app=$("#app");
+ if(!KEY&&S.tab==="eventos") app.innerHTML=viewLogin();
+ else if(S.tab==="manual") app.innerHTML=viewManual();
+ else if(S.tab==="roteiro") app.innerHTML=viewRoteiro();
+ else if(S.eventId) app.innerHTML=viewEvent();
+ else app.innerHTML=viewList();
+ bind();syncBadge();
+}
+
+function viewLogin(){
+ return `<form class="panel stack login" id="login-form">
+  <h2>Entrar</h2><p class="muted">Use a senha do time de captação. O seu nome aparece nos itens que você marcar.</p>
+  <label class="field"><span class="label">Seu nome</span><input type="text" id="l-name" required autocomplete="given-name" value="${esc(ME)}"></label>
+  <label class="field"><span class="label">Senha do time</span><input type="password" id="l-key" required autocomplete="current-password" style="width:100%;background:var(--sunken);border:1px solid var(--line);border-radius:8px;padding:9px 11px"></label>
+  ${S.error?`<div class="alert err">${esc(S.error)}</div>`:""}
+  <button class="btn primary" type="submit" ${S.busy?"disabled":""}>${S.busy?`<span class="spinner"></span> Entrando…`:"Entrar"}</button>
+  <p class="note">O Manual e o Roteiro modelo abrem sem senha.</p>
+ </form>`;
+}
+
+function viewList(){
+ let list;
+ if(!S.loaded) list=`<div class="empty"><span class="spinner"></span> Carregando eventos…</div>`;
+ else if(!S.events.length) list=`<div class="empty">${S.offline?"Sem conexão e nenhum evento salvo neste aparelho.":"Nenhuma captação cadastrada ainda.<br>Crie a primeira em <b>Nova captação</b>: dá para subir o roteiro em PDF ou começar de um modelo por tipo de evento."}</div>`;
+ else list=`<div class="events">${[...S.events].sort((a,b)=>(a.date||"").localeCompare(b.date||"")).map(ev=>{
+  const [,m,d]=(ev.date||"").split("-");
+  const bars=["pre","durante","pos"].map(ph=>{const p=progress(ev,ph);return `<div class="bar" title="${ph}: ${p.d}/${p.n}"><i style="width:${p.n?Math.round(p.d/p.n*100):0}%"></i></div>`}).join("");
+  return `<button class="ev" data-open="${esc(ev.id)}">
+   <span class="date"><b>${d||"--"}</b><span class="label">${m?MONTHS[+m-1]:"sem data"}</span></span>
+   <span class="meta"><h3>${esc(ev.title)}</h3><span class="muted">${esc(ev.client)}${ev.location?" · "+esc(ev.location):""}</span><br><span class="chip">${esc((TYPES[ev.type]||TYPES.outro).name)}</span>${ev.plan?.fonte==="roteiro"?` <span class="chip ok">roteiro lido</span>`:""}</span>
+   <span class="bars" aria-label="Progresso pré, durante e pós">${bars}<span class="label" style="font-size:10px">pré · dur · pós</span></span>
+  </button>`}).join("")}</div>`;
+ return `<section class="stack">
+  <div class="row"><div style="margin-right:auto"><h1>Captações</h1><p class="muted">Olá, ${esc(ME||"equipe")}. Abra o evento na hora de gravar e siga o checklist de pré, durante e pós.</p></div>
+  <button class="btn rec" id="new-toggle">${S.newOpen?"Fechar":"Nova captação"}</button></div>
+  ${S.newOpen?viewNew():""}
+  ${list}
+  <p class="note"><button class="btn ghost" id="logout" style="padding:0">Sair deste aparelho</button></p>
+ </section>`;
+}
+
+function roteiroInput(prefix){
+ const pdf=S.pdf[prefix];
+ return `<div class="field"><span class="label">Roteiro do evento</span>
+  <div class="drop" id="${prefix}-drop">${pdf?`PDF anexado: <b>${esc(pdf.name)}</b> · <button class="btn ghost" type="button" id="${prefix}-clear">remover</button>`:`Arraste o roteiro aqui (PDF, DOCX ou TXT) ou <label class="btn" style="display:inline-block" for="${prefix}-file">escolher arquivo</label>`}
+   <input type="file" id="${prefix}-file" accept=".pdf,.docx,.txt,.md" hidden></div>
+  <textarea id="${prefix}-text" placeholder="${pdf?"(opcional) observações extras para a IA":"…ou cole o texto do roteiro aqui"}">${esc(S.draft?.[prefix]||"")}</textarea>
+  <div class="row"><button class="btn ghost" id="${prefix}-sample" type="button">Colar exemplo (café com franqueados)</button>
+  <span class="note" id="${prefix}-status">A IA lê o roteiro e monta o checklist do evento. Leva de 20 s a 1 min.</span></div>
+ </div>`;
+}
+
+function viewNew(){
+ return `<form class="panel stack" id="new-form">
+  <h2>Nova captação</h2>
+  <div class="grid2">
+   <label class="field"><span class="label">Evento</span><input type="text" id="n-title" required placeholder="Café com Franqueados"></label>
+   <label class="field"><span class="label">Cliente</span><input type="text" id="n-client" required placeholder="SMZTO"></label>
+   <label class="field"><span class="label">Data</span><input type="date" id="n-date" required></label>
+   <label class="field"><span class="label">Local</span><input type="text" id="n-loc" placeholder="Escritório do cliente"></label>
+   <label class="field"><span class="label">Tipo de evento</span><select id="n-type">${Object.entries(TYPES).map(([k,v])=>`<option value="${k}">${v.name}</option>`).join("")}</select></label>
+   <label class="field"><span class="label">Pasta do cliente no Drive (link, opcional)</span><input type="url" id="n-drive" placeholder="https://drive.google.com/…"></label>
+  </div>
+  ${roteiroInput("n")}
+  ${S.error?`<div class="alert err">${esc(S.error)}</div>`:""}
+  <div class="row"><button class="btn primary" type="submit" ${S.busy?"disabled":""}>${S.busy?`<span class="spinner"></span> ${esc(S.busy)}`:"Criar e gerar checklist"}</button></div>
+ </form>`;
+}
+
+function viewEvent(){
+ const ev=S.events.find(e=>e.id===S.eventId);
+ if(!ev) return `<div class="empty">Evento não encontrado. <button class="btn" id="back">Voltar</button></div>`;
+ const plan=ev.plan||{}; const checks=ev.checks||{};
+ const items=itemsFor(ev,S.phase);
+ const groups=[]; items.forEach(i=>{let g=groups.find(x=>x.name===i.g);if(!g)groups.push(g={name:i.g,items:[]});g.items.push(i)});
+ const prog=["pre","durante","pos"].map(ph=>({ph,...progress(ev,ph)}));
+ const PH={pre:"PRÉ",durante:"DURANTE",pos:"PÓS"};
+ const itemHtml=i=>{
+  const c=checks[i.id]; const on=!!c?.v;
+  let extra="";
+  if(i.cena){const x=i.cena;extra=`<span class="sub">${esc(x.descricao||"")}${x.quem?" · "+esc(x.quem):""}</span>
+   <span class="tags"><span class="chip ${x.prioridade==="obrigatoria"?"must":""}">${x.prioridade==="obrigatoria"?"obrigatória":"desejável"}</span><span class="chip">${esc(x.momento||"")}</span></span>
+   ${x.perguntas?.length?`<ul>${x.perguntas.map(q=>`<li>${esc(q)}</li>`).join("")}</ul>`:""}`}
+  else if(i.s) extra=`<span class="sub">${esc(i.s)}</span>`;
+  if(i.opt) extra+=`<span class="tags"><span class="chip">boa prática · quando der</span></span>`;
+  const who=on&&c.at?`<span class="who">✓ ${esc(c.by||"equipe")} · ${new Date(c.at).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})}</span>`:"";
+  return `<div class="item ${on?"done":""}"><input type="checkbox" id="ck-${esc(i.id)}" data-check="${esc(i.id)}" ${on?"checked":""}>
+   <label for="ck-${esc(i.id)}"><span class="t">${esc(i.t)}</span>${extra}${who}</label></div>`;
+ };
+ let phaseExtra="";
+ if(S.phase==="pos"){
+  phaseExtra=`<div class="panel stack"><span class="label">Onde salvar o material bruto</span>
+   <div class="path"><code id="drive-path">${esc(drivePath(ev))}</code><button class="btn" id="copy-path">Copiar</button></div>
+   <p class="note">Pasta do cliente › Vídeos › mês da captação › crie a pasta “Material bruto – evento” e suba tudo nela. Mantenha os nomes originais dos arquivos.</p>
+   ${ev.driveUrl?`<a class="btn" style="justify-self:start;text-decoration:none" href="${esc(ev.driveUrl)}" target="_blank" rel="noopener">Abrir pasta do cliente no Drive ↗</a>`:""}
+  </div>
+  <div class="panel stack"><label class="field"><span class="label">Notas para edição</span>
+   <textarea id="ev-notes" placeholder="Melhores takes, falas de destaque (com horário aproximado), o que deu errado, o que faltou gravar…">${esc(ev.notes||"")}</textarea></label>
+   <span class="note" id="notes-status">Quem edita lê isto antes de abrir o material. Salva sozinho.</span></div>`;
+ }
+ return `<section class="stack">
+  <div class="evhead">
+   <button class="btn ghost back" id="back">← Captações</button>
+   <span class="label">${esc(ev.client)} · ${ev.date?ev.date.split("-").reverse().join("/"):"sem data"}${ev.location?" · "+esc(ev.location):""}</span>
+   <h1>${esc(ev.title)}</h1>
+   ${plan.resumo?`<p class="muted">${esc(plan.resumo)}</p>`:""}
+   <div class="row"><span class="chip">${esc((TYPES[ev.type]||TYPES.outro).name)}</span>
+    ${plan.formato?`<span class="chip">${esc(plan.formato)}</span>`:""}
+    <span class="chip ${plan.fonte==="roteiro"?"ok":""}">${plan.fonte==="roteiro"?"checklist gerado do roteiro":"checklist do modelo"}</span></div>
+  </div>
+  ${(plan.alertas||[]).length?`<div class="alert"><b>Atenção:</b><ul style="margin:4px 0 0;padding-left:18px">${plan.alertas.map(a=>`<li>${esc(a)}</li>`).join("")}</ul></div>`:""}
+  <div class="mode" role="group" aria-label="Fase">${prog.map(p=>`<button data-phase="${p.ph}" aria-pressed="${S.phase===p.ph}">${PH[p.ph]} <small class="mono">${p.d}/${p.n}</small></button>`).join("")}</div>
+  <div class="panel">
+   ${groups.map(g=>{const req=g.items.filter(i=>!i.opt);const d=req.filter(i=>checks[i.id]?.v).length;return `<div class="group"><h3>${esc(g.name)}${g.items[0].src?`<span class="src">evento</span>`:""}<span class="label count mono">${req.length?d+"/"+req.length:"opcional"}</span></h3>${g.items.map(itemHtml).join("")}</div>`}).join("")}
+   <form class="addline" id="add-form"><input type="text" id="add-text" placeholder="Adicionar item ao ${PH[S.phase].toLowerCase()} deste evento"><button class="btn" type="submit">Adicionar</button></form>
+  </div>
+  ${phaseExtra}
+  <details class="panel"><summary><b>Atualizar roteiro</b> <span class="muted">— sobe uma nova versão e refaz os itens do evento</span></summary>
+   <form class="stack" id="re-form" style="margin-top:12px">${roteiroInput("r")}
+   ${S.error?`<div class="alert err">${esc(S.error)}</div>`:""}
+   <div class="row"><button class="btn primary" type="submit" ${S.busy?"disabled":""}>${S.busy?`<span class="spinner"></span> ${esc(S.busy)}`:"Gerar checklist de novo"}</button></div></form>
+   <hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
+   <div class="row" id="del-zone"><button class="btn ghost" id="del-ask" type="button">Excluir evento</button></div>
+  </details>
+ </section>`;
+}
+
+function viewManual(){
+ const lv=S.mlevel||"o"; const secs=MANUAL.filter(x=>x.lv===lv);
+ return `<section class="manual">
+  <div><h1>Manual de captação</h1><p class="muted" style="max-width:62ch">${lv==="o"?"<b>Obrigatório</b>: vale para toda captação, sem exceção. Tudo aqui está no checklist de cada evento e conta no progresso.":"<b>Boas práticas</b>: aplique quando der tempo e estrutura. Aparecem no checklist marcadas como “quando der” e não contam no progresso."}</p></div>
+  <div class="mode" role="group" aria-label="Nível do manual" style="position:static;max-width:420px">
+   <button data-mlevel="o" aria-pressed="${lv==="o"}">OBRIGATÓRIO</button><button data-mlevel="b" aria-pressed="${lv==="b"}">BOAS PRÁTICAS</button></div>
+  <div class="toc">${secs.map(s=>`<a class="chip" href="#${s.id}" style="text-decoration:none">${s.name}</a>`).join("")}</div>
+  ${secs.map(s=>`<article class="panel" id="${s.id}"><h2>${s.name}</h2><p class="muted" style="margin:4px 0 8px">${s.lead}</p>
+   ${s.rules.map((r,i)=>`<div class="rule"><span class="n">${String(i+1).padStart(2,"0")}</span><b>${r[0]}</b><span class="m">${r[1]}</span></div>`).join("")}</article>`).join("")}
+ </section>`;
+}
+
+function viewRoteiro(){
+ return `<section class="stack">
+  <div><h1>Roteiro modelo</h1><p class="muted" style="max-width:62ch">Preencha até 2 dias antes da captação. Depois suba o arquivo em <b>Nova captação</b>: o sistema lê o roteiro e monta o checklist do evento com as cenas, depoimentos e equipamentos.</p></div>
+  <div class="row"><button class="btn rec" id="dl-docx">Baixar roteiro modelo (.docx)</button><button class="btn" id="dl-txt">Baixar em texto (.txt)</button></div>
+  <p class="note">O .docx abre no Word e no Google Docs. Exporte em PDF ou suba o próprio .docx.</p>
+  <div class="panel tpl">${TEMPLATE.map(s=>`<h3>${s.h}</h3>${s.hint?`<p class="note">${s.hint}</p>`:""}<ol>${(s.f||[]).map(f=>`<li>${f}</li>`).join("")}${s.tbl?`<li>Tabela: ${s.tbl.join(" · ")}</li>`:""}</ol>`).join("")}</div>
+ </section>`;
+}
+
+/* ============================== EVENTOS DE UI ============================== */
+function bind(){
+ $("#login-form")&&($("#login-form").onsubmit=e=>{e.preventDefault();login()});
+ $("#logout")&&($("#logout").onclick=()=>{KEY="";lsSet("team-key","");S.events=[];S.loaded=false;render()});
+ document.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>{S.eventId=b.dataset.open;S.phase=lsGet("phase-"+S.eventId)||"pre";S.error=null;S.pdf={};render();window.scrollTo(0,0);wake()});
+ $("#back")&&($("#back").onclick=()=>{S.eventId=null;S.error=null;render()});
+ $("#new-toggle")&&($("#new-toggle").onclick=()=>{S.newOpen=!S.newOpen;S.error=null;render()});
+ document.querySelectorAll("[data-mlevel]").forEach(b=>b.onclick=()=>{S.mlevel=b.dataset.mlevel;lsSet("mlevel",S.mlevel);render()});
+ document.querySelectorAll("[data-phase]").forEach(b=>b.onclick=()=>{S.phase=b.dataset.phase;lsSet("phase-"+S.eventId,S.phase);render()});
+ document.querySelectorAll("[data-check]").forEach(c=>c.onchange=()=>toggle(c.dataset.check,c.checked));
+ ["n","r"].forEach(p=>bindRoteiro(p));
+ $("#new-form")&&($("#new-form").onsubmit=e=>{e.preventDefault();createEvent()});
+ $("#re-form")&&($("#re-form").onsubmit=e=>{e.preventDefault();regenerate()});
+ $("#add-form")&&($("#add-form").onsubmit=e=>{e.preventDefault();addCustom()});
+ $("#copy-path")&&($("#copy-path").onclick=()=>{const t=$("#drive-path").textContent;(navigator.clipboard?.writeText(t)||Promise.reject()).then(()=>toast("Caminho copiado"),()=>{const r=document.createRange();r.selectNodeContents($("#drive-path"));getSelection().removeAllRanges();getSelection().addRange(r);toast("Selecionado: copie com Ctrl/Cmd+C")})});
+ const notes=$("#ev-notes"); if(notes){let t;notes.oninput=()=>{clearTimeout(t);$("#notes-status").textContent="Salvando…";t=setTimeout(()=>saveNotes(notes.value),900)}}
+ $("#del-ask")&&($("#del-ask").onclick=()=>{$("#del-zone").innerHTML=`<span>Excluir este evento e todo o checklist marcado?</span><button class="btn rec" id="del-yes" type="button">Excluir</button><button class="btn" id="del-no" type="button">Cancelar</button>`;$("#del-yes").onclick=delEvent;$("#del-no").onclick=render});
+ $("#dl-docx")&&($("#dl-docx").onclick=dlDocx);
+ $("#dl-txt")&&($("#dl-txt").onclick=()=>save("roteiro-modelo-dennova.txt",new Blob([templateText()],{type:"text/plain;charset=utf-8"})));
+}
+function bindRoteiro(p){
+ const drop=$("#"+p+"-drop"), file=$("#"+p+"-file"), ta=$("#"+p+"-text");
+ if(!drop) return;
+ const keep=()=>{S.draft={...(S.draft||{}),[p]:ta.value}};
+ ta.oninput=keep;
+ $("#"+p+"-sample").onclick=()=>{ta.value=SAMPLE_ROTEIRO;keep()};
+ $("#"+p+"-clear")&&($("#"+p+"-clear").onclick=()=>{delete S.pdf[p];keepForm();render()});
+ file.onchange=()=>file.files[0]&&readFile(file.files[0],p);
+ drop.ondragover=e=>{e.preventDefault();drop.classList.add("over")};
+ drop.ondragleave=()=>drop.classList.remove("over");
+ drop.ondrop=e=>{e.preventDefault();drop.classList.remove("over");const f=e.dataTransfer.files[0];f&&readFile(f,p)};
+}
+// guarda o que já foi digitado no formulário antes de redesenhar
+const FORM_IDS=["n-title","n-client","n-date","n-loc","n-type","n-drive"];
+function keepForm(){S.form={};FORM_IDS.forEach(id=>{const el=$("#"+id);if(el)S.form[id]=el.value})}
+function restoreForm(){if(!S.form)return;FORM_IDS.forEach(id=>{const el=$("#"+id);if(el&&S.form[id]!=null)el.value=S.form[id]})}
+
+async function login(){
+ const name=$("#l-name").value.trim(), key=$("#l-key").value;
+ S.busy="login";S.error=null;KEY=key;
+ try{await api("/api/login");ME=name;lsSet("my-name",name);lsSet("team-key",key);S.busy=null;render();loadEvents();flush()}
+ catch(e){KEY="";S.busy=null;S.error=e?.status===401?"Senha incorreta.":"Sem conexão com o servidor. Tente de novo.";render();$("#l-name").value=name}
+}
+
+/* ============================== ARQUIVOS ============================== */
+function loadScript(src){return new Promise((ok,no)=>{if(document.querySelector(`script[src="${src}"]`))return ok();const s=document.createElement("script");s.src=src;s.onload=ok;s.onerror=()=>no(new Error("load"));document.head.append(s)})}
+const JSZIP="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";
+const toB64=buf=>{let s="";const b=new Uint8Array(buf);for(let i=0;i<b.length;i+=0x8000)s+=String.fromCharCode.apply(null,b.subarray(i,i+0x8000));return btoa(s)};
+async function readFile(f,p){
+ const st=$("#"+p+"-status"); st.innerHTML=`<span class="spinner"></span> Lendo ${esc(f.name)}…`;
+ const name=f.name.toLowerCase();
+ try{
+  if(name.endsWith(".pdf")){
+   if(f.size>3*1024*1024){st.textContent="PDF maior que 3 MB. Exporte uma versão menor ou cole o texto.";return}
+   keepForm();S.pdf[p]={name:f.name,data:toB64(await f.arrayBuffer())};render();restoreForm();return;
+  }
+  let text="";
+  if(name.endsWith(".docx")){
+   await loadScript(JSZIP);
+   const zip=await JSZip.loadAsync(await f.arrayBuffer());
+   const xml=await zip.file("word/document.xml").async("string");
+   text=xml.replace(/<\/w:p>/g,"\n").replace(/<\/w:tc>/g," | ").replace(/<w:tab\/>/g,"\t").replace(/<[^>]+>/g,"").replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&apos;/g,"'");
+  }else text=await f.text();
+  text=text.replace(/[ \t]+\n/g,"\n").replace(/\n{3,}/g,"\n\n").trim();
+  if(text.length<40) throw new Error("vazio");
+  $("#"+p+"-text").value=text; S.draft={...(S.draft||{}),[p]:text};
+  st.textContent=`${f.name} lido. Confira o texto acima antes de gerar.`;
+ }catch(e){st.textContent=e.message==="vazio"?"Não encontrei texto nesse arquivo. Cole o texto do roteiro no campo.":"Não consegui ler o arquivo. Cole o texto do roteiro no campo."}
+}
+function save(filename,blob){
+ const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);
+}
+function templateText(){
+ return "ROTEIRO DE CAPTAÇÃO — DENNOVA\nPreencha até 2 dias antes. Depois suba no sistema em Nova captação.\n\n"+TEMPLATE.map(s=>{
+  let t=s.h+"\n"+(s.hint?s.hint+"\n":"");
+  if(s.f) t+=s.f.map(f=>f+": ").join("\n");
+  if(s.tbl){const rows=s.pre||Array.from({length:s.rows},()=>s.tbl.map(()=>""));t+=s.tbl.join(" | ")+"\n"+rows.map(r=>"- "+r.join(" | ")).join("\n")}
+  return t}).join("\n\n")+"\n";
+}
+async function dlDocx(){
+ try{await loadScript(JSZIP)}catch{toast("Não consegui preparar o .docx. Baixe em texto.");return}
+ const x=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+ const run=(t,o={})=>`<w:r><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/>${o.b?"<w:b/>":""}${o.c?`<w:color w:val="${o.c}"/>`:""}<w:sz w:val="${o.sz||22}"/></w:rPr><w:t xml:space="preserve">${x(t)}</w:t></w:r>`;
+ const para=(runs,o={})=>`<w:p><w:pPr><w:spacing w:before="${o.before||0}" w:after="${o.after??120}"/></w:pPr>${runs}</w:p>`;
+ const B="<w:top w:val=\"single\" w:sz=\"4\" w:color=\"999999\"/><w:left w:val=\"single\" w:sz=\"4\" w:color=\"999999\"/><w:bottom w:val=\"single\" w:sz=\"4\" w:color=\"999999\"/><w:right w:val=\"single\" w:sz=\"4\" w:color=\"999999\"/><w:insideH w:val=\"single\" w:sz=\"4\" w:color=\"999999\"/><w:insideV w:val=\"single\" w:sz=\"4\" w:color=\"999999\"/>";
+ const table=(head,rows)=>{const w=Math.floor(9000/head.length);const cell=(t,b)=>`<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/>${b?'<w:shd w:val="clear" w:color="auto" w:fill="EEEEEE"/>':""}</w:tcPr>${para(run(t,{b,sz:20}),{after:60})}</w:tc>`;
+  return `<w:tbl><w:tblPr><w:tblW w:w="9000" w:type="dxa"/><w:tblBorders>${B}</w:tblBorders></w:tblPr><w:tblGrid>${head.map(()=>`<w:gridCol w:w="${w}"/>`).join("")}</w:tblGrid>
+  <w:tr>${head.map(h=>cell(h,true)).join("")}</w:tr>${rows.map(r=>`<w:tr><w:trPr><w:trHeight w:val="440"/></w:trPr>${r.map(c=>cell(c,false)).join("")}</w:tr>`).join("")}</w:tbl>${para("",{after:120})}`};
+ let body=para(run("ROTEIRO DE CAPTAÇÃO",{b:true,sz:36}),{after:60})+para(run("Dennova · preencha até 2 dias antes e suba no sistema em Nova captação.",{c:"666666",sz:20}),{after:240});
+ TEMPLATE.forEach(s=>{
+  body+=para(run(s.h,{b:true,sz:28,c:"C0232B"}),{before:240,after:80});
+  if(s.hint) body+=para(run(s.hint,{c:"666666",sz:20}));
+  (s.f||[]).forEach(f=>body+=para(run(f+": ",{b:true})+run("______________________________________________",{c:"BBBBBB"})));
+  if(s.tbl) body+=table(s.tbl,s.pre||Array.from({length:s.rows},()=>s.tbl.map(()=>"")));
+ });
+ const zip=new JSZip();
+ zip.file("[Content_Types].xml",'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>');
+ zip.file("_rels/.rels",'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>');
+ zip.file("word/document.xml",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${body}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="0" w:footer="0" w:gutter="0"/></w:sectPr></w:body></w:document>`);
+ save("roteiro-modelo-dennova.docx",await zip.generateAsync({type:"blob",mimeType:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"}));
+}
+
+/* ============================== IA ============================== */
+async function aiPlan(text,pdf,type){
+ const {plan}=await api("/api/gerar",{method:"POST",body:{text,pdf:pdf?.data||"",tipo:(TYPES[type]||TYPES.outro).name,generic:GENERIC.map(g=>g.t)}});
+ const arr=v=>Array.isArray(v)?v.filter(Boolean).map(String).slice(0,10):[];
+ return {...plan,cenas:(plan.cenas||[]).slice(0,30),equipamentos:(plan.equipamentos||[]).filter(e=>e.item).slice(0,20),pre:arr(plan.pre),durante:arr(plan.durante),pos:arr(plan.pos),alertas:arr(plan.alertas)};
+}
+
+/* ============================== ESCRITAS ============================== */
+async function createEvent(){
+ const v=id=>$("#"+id).value.trim();
+ const text=v("n-text"); const type=$("#n-type").value; const pdf=S.pdf.n;
+ const ev={title:v("n-title"),client:v("n-client"),date:$("#n-date").value,location:v("n-loc"),type,driveUrl:v("n-drive"),
+  plan:presetPlan(type),checks:{},custom:{pre:[],durante:[],pos:[]},notes:"",createdBy:ME,roteiro:text.slice(0,30000)};
+ keepForm();S.error=null;
+ if(text||pdf){
+  S.busy="Lendo roteiro…";render();restoreForm();
+  try{const plan=await aiPlan(text,pdf,type);ev.plan=plan;if(!ev.location&&plan.local)ev.location=plan.local}
+  catch(e){if(e?.status===401)return;ev.plan.alertas=[(e?.error||"A IA não conseguiu ler o roteiro.")+" O evento ficou com o modelo do tipo; use “Atualizar roteiro” para tentar de novo."]}
+ }
+ S.busy="Salvando…";render();restoreForm();
+ try{const {event}=await api("/api/events",{method:"POST",body:ev});
+  S.busy=null;S.newOpen=false;S.draft=null;S.pdf={};S.form=null;S.events.push(event);S.eventId=event.id;S.phase="pre";render();window.scrollTo(0,0);wake()}
+ catch(e){S.busy=null;S.error=e?.error||"Sem conexão. Para criar um evento é preciso estar online.";render();restoreForm()}
+}
+async function regenerate(){
+ const ev=S.events.find(e=>e.id===S.eventId); const text=$("#r-text").value.trim(); const pdf=S.pdf.r;
+ if(!text&&!pdf){S.error="Suba ou cole o roteiro antes de gerar.";render();return}
+ S.error=null;S.busy="Lendo roteiro…";render();
+ try{const plan=await aiPlan(text,pdf,ev.type);
+  const checks={};Object.entries(ev.checks||{}).forEach(([k,v])=>{if(k.startsWith("g-")||k.startsWith("u-"))checks[k]=v});
+  const {event}=await api("/api/events?id="+encodeURIComponent(ev.id),{method:"PATCH",body:{plan,checks,roteiro:text.slice(0,30000)}});
+  Object.assign(ev,overlay(event));S.busy=null;S.draft=null;S.pdf={};toast("Checklist atualizado");render()}
+ catch(e){S.busy=null;S.error=e?.error||"Sem conexão. Tente de novo.";render()}
+}
+function toggle(item,on){
+ const ev=S.events.find(e=>e.id===S.eventId); if(!ev) return;
+ const val=on?{v:true,by:ME,at:new Date().toISOString()}:{v:false};
+ ev.checks={...(ev.checks||{}),[item]:val}; render();
+ queue({k:"check",id:ev.id,item,val});
+}
+function addCustom(){
+ const t=$("#add-text").value.trim(); if(!t) return;
+ const ev=S.events.find(e=>e.id===S.eventId);
+ const custom={pre:[],durante:[],pos:[],...(ev.custom||{})}; custom[S.phase]=[...(custom[S.phase]||[]),t];
+ ev.custom=custom; render(); queue({k:"patch",id:ev.id,fields:{custom}});
+}
+function saveNotes(text){
+ const ev=S.events.find(e=>e.id===S.eventId); if(!ev) return; ev.notes=text;
+ queue({k:"patch",id:ev.id,fields:{notes:text}});
+ const s=$("#notes-status"); if(s) s.textContent=navigator.onLine?"Salvo.":"Salvo no aparelho. Sobe quando a internet voltar.";
+}
+async function delEvent(){
+ const id=S.eventId;
+ try{await api("/api/events?id="+encodeURIComponent(id),{method:"DELETE"});S.events=S.events.filter(e=>e.id!==id);OUTBOX=OUTBOX.filter(o=>o.id!==id);saveOutbox();S.eventId=null;toast("Evento excluído");render()}
+ catch{toast("Sem conexão. Tente excluir de novo depois.")}
+}
+
+/* ============================== TELA ACESA ============================== */
+let lock=null;
+async function wake(){try{if(!lock&&navigator.wakeLock){lock=await navigator.wakeLock.request("screen");lock.addEventListener("release",()=>lock=null)}}catch{}}
+
+/* ============================== BOOT ============================== */
+document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>{S.tab=b.dataset.tab;lsSet("tab",S.tab);if(S.tab!=="eventos")S.eventId=null;render();window.scrollTo(0,0)});
+S.mlevel=lsGet("mlevel")||"o";
+S.tab=["eventos","manual","roteiro"].includes(location.hash.slice(1))?location.hash.slice(1):(lsGet("tab")||"eventos");
+if(KEY){S.events=lsJSON("events-cache",[]).map(overlay);S.loaded=S.events.length>0}
+render();
+loadEvents();flush();
+window.addEventListener("online",()=>{flush();loadEvents()});
+window.addEventListener("offline",()=>{S.offline=true;syncBadge()});
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"){flush();loadEvents();if(S.eventId)wake()}});
+setInterval(()=>{if(document.visibilityState==="visible"){flush();loadEvents()}},15000);
+
+</script>
+</body>
+</html>
